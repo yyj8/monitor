@@ -1,5 +1,6 @@
 package com.yyj.monitor;
 
+import io.prometheus.client.Gauge;
 import io.prometheus.client.exporter.common.TextFormat;
 
 import java.io.IOException;
@@ -34,9 +35,13 @@ public class PrometheusServlet extends HttpServlet {
             // # TYPE bookie_storage_entries_count gauge
             // bookie_storage_entries_count 519
             try {
+                Gauge requestCount = provider.gauges.get("request_count");
                 writer.append("# TYPE ").append("request_count").append(" gauge\n");
                 writer.append("request_count");
-                writer.append(' ').append("1").append('\n');
+                writer.append("{");
+                writer.append("\"broker\"=\"1001\"");
+                writer.append("}");
+                writer.append(' ').append(String.valueOf(requestCount.get())).append('\n');
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
